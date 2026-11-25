@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScrapeFlow — Universal Web Scraper</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">Scrape<span>Flow</span></div>
+      <p class="subtitle">Extract faculty directories, emails, tables, and structured web data — export cleanly to CSV, Excel, PDF, Word, Markdown, or JSON.</p>
+    </header>
+
+    <section class="drop-card" id="dropZone">
+      <div class="drop-icon">🌐</div>
+      <h3>Paste or Drop Target URL</h3>
+      <p class="hint">Example: <code>http://www.en.cs.zju.edu.cn/AssociateProfessor/list.htm</code> or <code>https://www.cs.tsinghua.edu.cn/csen/Faculty/Full_time_Faculty.htm</code></p>
+
+      <div class="url-input-group">
+        <input type="url" id="targetUrl" placeholder="https://example.com/faculty/list.htm" required />
+        <button type="button" id="scrapeBtn" onclick="startScraping()">
+          <span id="btnText">Scrape Now</span>
+          <span id="btnLoader" class="spinner hidden"></span>
+        </button>
+      </div>
+
+      <div class="options-grid">
+        <div class="option-box">
+          <label for="scrapeMode">Extraction Target</label>
+          <select id="scrapeMode">
+            <option value="faculty" selected>Faculty / Professors (Name, Title, Institute, Email, Research)</option>
+            <option value="emails">All Email Addresses</option>
+            <option value="tables">HTML Tables (Structured Data)</option>
+            <option value="links">All Links & Anchors</option>
+            <option value="headings">Headings & Paragraphs (Articles)</option>
+            <option value="images">All Images & Alt Text</option>
+          </select>
+        </div>
+
+        <div class="option-box">
+          <label for="maxPages">Pagination Depth</label>
+          <select id="maxPages">
+            <option value="1">1 Page (Fast)</option>
+            <option value="3" selected>Up to 3 Pages (Follow Next)</option>
+            <option value="5">Up to 5 Pages (Follow Next)</option>
+          </select>
+        </div>
+
+        <div class="option-box checkbox-box">
+          <label>
+            <input type="checkbox" id="followProfiles" checked />
+            <span>Deep crawl sub-profiles for Email & Research</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="quick-links">
+        <span>Quick Presets:</span>
+        <button type="button" class="pill" onclick="fillUrl('http://www.en.cs.zju.edu.cn/AssociateProfessor/list.htm')">ZJU Assoc. Prof</button>
+        <button type="button" class="pill" onclick="fillUrl('http://www.en.cs.zju.edu.cn/ZJUw100Talent/list.htm')">ZJU-100 Talent</button>
+        <button type="button" class="pill" onclick="fillUrl('http://www.en.cs.zju.edu.cn/Postdoc/list.htm')">ZJU Postdoc</button>
+        <button type="button" class="pill" onclick="fillUrl('https://www.cs.tsinghua.edu.cn/csen/Faculty/Full_time_Faculty.htm')">Tsinghua CS</button>
+      </div>
+    </section>
+
+    <div id="statusMsg" class="status hidden"></div>
+
+    <section id="resultSection" class="result-section hidden">
+      <div class="result-header">
+        <div>
+          <h2>Extracted Records (<span id="recordCount">0</span>)</h2>
+          <p class="small-note">Export structured dataset in your preferred format:</p>
+        </div>
+
+        <div class="export-buttons">
+          <button type="button" class="exp-btn csv" onclick="exportCSV()">CSV</button>
+          <button type="button" class="exp-btn xlsx" onclick="exportExcel()">Excel (.xlsx)</button>
+          <button type="button" class="exp-btn pdf" onclick="exportPDF()">PDF</button>
+          <button type="button" class="exp-btn doc" onclick="exportWord()">Word (.doc)</button>
+          <button type="button" class="exp-btn md" onclick="exportMarkdown()">Markdown (.md)</button>
+          <button type="button" class="exp-btn json" onclick="exportJSON()">JSON</button>
+        </div>
+      </div>
+
+      <div class="table-controls">
+        <input type="text" id="searchFilter" placeholder="Filter by name, institute, email, or research topic..." onkeyup="filterTable()" />
+      </div>
+
+      <div class="table-wrapper">
+        <table id="dataTable">
+          <thead id="tableHead"></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
